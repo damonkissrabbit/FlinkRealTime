@@ -8,7 +8,6 @@ import com.damon.utils.MyKafkaUtil;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-import java.io.IOException;
 
 import static com.damon.utils.EnvUtil.getEnv;
 import static com.damon.utils.PropUtil.getKafkaProp;
