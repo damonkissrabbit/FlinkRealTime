@@ -25,6 +25,32 @@ public class demo {
         tableProcess.setOperateType("aaa");
         System.out.println(tableProcess.toString());
 
+        String jsonString = "{\n" +
+                "\t\"common\": {\n" +
+                "\t\t\"ar\": \"440000\",\n" +
+                "\t\t\"ba\": \"vivo\",\n" +
+                "\t\t\"ch\": \"oppo\",\n" +
+                "\t\t\"is_new\": \"1\",\n" +
+                "\t\t\"md\": \"vivo iqoo3\",\n" +
+                "\t\t\"mid\": \"mid_14\",\n" +
+                "\t\t\"os\": \"Android 11.0\",\n" +
+                "\t\t\"uid\": \"1\",\n" +
+                "\t\t\"vc\": \"v2.1.134\"\n" +
+                "\t},\n" +
+                "\t\"start\": {\n" +
+                "\t\t\"entry\": \"icon\",\n" +
+                "\t\t\"loading_time\": 11704,\n" +
+                "\t\t\"open_ad_id\": 14,\n" +
+                "\t\t\"open_ad_ms\": 1010,\n" +
+                "\t\t\"open_ad_skip_ms\": 1001\n" +
+                "\t},\n" +
+                "\t\"ts\": 1660483545000\n" +
+                "}";
+
+        JSONObject jsonObj = JSONObject.parseObject(jsonString);
+        System.out.println(jsonObj.getString("start"));
+
+
 //        Schema schema = SchemaBuilder.struct()
 //                .field("name", Schema.STRING_SCHEMA)
 //                .field("age", Schema.INT32_SCHEMA)
