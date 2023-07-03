@@ -6,7 +6,7 @@ import com.alibaba.ververica.cdc.connectors.mysql.MySQLSource;
 import com.alibaba.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.alibaba.ververica.cdc.debezium.DebeziumSourceFunction;
 import com.damon.app.function.CustomerDeserialization;
-import com.damon.app.function.DinSinkFunction;
+import com.damon.app.function.DimSinkFunction;
 import com.damon.app.function.TableProcessFunction;
 import com.damon.bean.TableProcess;
 import com.damon.utils.MyKafkaUtil;
@@ -22,6 +22,8 @@ import static com.damon.utils.EnvUtil.getEnv;
 import static com.damon.utils.PropUtil.getKafkaProp;
 import static com.damon.utils.PropUtil.getMysqlProp;
 
+
+// 对从Flink cdc获取的数据进行分流
 public class BaseDBApp {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = getEnv();
@@ -77,7 +79,7 @@ public class BaseDBApp {
         kafka.print("kafka>>>>>>>>>>>>>>>>");
         hbase.print("hbase>>>>>>>>>>>>>>>>");
 
-        hbase.addSink(new DinSinkFunction());
+        hbase.addSink(new DimSinkFunction());
         // (KafkaSerializationSchema<JSONObject>) 是一个类型转换表达式，将匿名累不累转换为 KafkaSerializationSchema<JSONObject> 类型
         // 匿名内部类实现了 kafkaSerializationSchema 接口，并定义了 serialize 方法来讲 JSONObject 类型的数据序列化为 ProducerRecord
         // (element, timestamp) -> new ProducerRecord<>(...)  这是匿名内部类实现的 serialize 方法的具体实现，它接受两个参数

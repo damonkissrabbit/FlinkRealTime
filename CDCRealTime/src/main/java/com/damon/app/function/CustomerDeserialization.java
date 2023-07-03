@@ -33,6 +33,7 @@ public class CustomerDeserialization implements DebeziumDeserializationSchema<St
     public void deserialize(SourceRecord sourceRecord, Collector<String> collector) throws Exception {
         JSONObject result = new JSONObject();
 
+        // 这个是由 flink cdc内部处理到的
         String topic = sourceRecord.topic();
         String[] fields = topic.split("\\.");
         String database = fields[1];

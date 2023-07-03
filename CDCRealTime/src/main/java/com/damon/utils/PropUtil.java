@@ -15,4 +15,9 @@ public class PropUtil {
         ParameterTool tool = ParameterTool.fromPropertiesFile("CDCRealTime/src/main/resources/mysql.properties");
         return tool.getRequired(name);
     }
+
+    public static String getDimInfoProp(String name) throws IOException {
+        ParameterTool tool = ParameterTool.fromPropertiesFile("CDCRealTime/src/main/resources/dim_info.properties");
+        return tool.getRequired(name);
+    }
 }

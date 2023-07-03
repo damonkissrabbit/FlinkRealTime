@@ -20,7 +20,7 @@ import static com.damon.utils.EnvUtil.getEnv;
 import static com.damon.utils.PropUtil.getKafkaProp;
 
 /**
- * 处理来自 spring 的数据
+ * 处理来自spring的数据，对不同类型的数据进行分流。
  */
 public class BaseLogApp {
     public static void main(String[] args) throws Exception {
@@ -49,36 +49,36 @@ public class BaseLogApp {
 
         jsonDS.getSideOutput(outputTag).print("--------------Dirty-------------");
 
-        /**
-         * 新老用户校验 状态编程
-         * 根据mid字段来进行分类 keyBy
-         * valueState中保存每次数据过来的 is_New 字段
-         * 保存每个 mid 的首次访问日期，每条进入该算子的访问记录，
-         * 都会把每条mid对应的首次访问时间读取出来
-         * 只要首次访问时间不为空，则认为该访问时老访客，否则是新访客
-         * 如果是新访客切没有访问记录的话， 会写入首次访问时间
-         * ods_base_log
-         * {
-         *     "common":{
-         *         "ar":"440000",
-         *         "ba":"vivo",
-         *         "ch":"oppo",
-         *         "is_new":"1",
-         *         "md":"vivo iqoo3",
-         *         "mid":"mid_14",
-         *         "os":"Android 11.0",
-         *         "uid":"1",
-         *         "vc":"v2.1.134"
-         *     },
-         *     "start":{
-         *         "entry":"icon",
-         *         "loading_time":11704,
-         *         "open_ad_id":14,
-         *         "open_ad_ms":1010,
-         *         "open_ad_skip_ms":1001
-         *     },
-         *     "ts":1660483545000
-         * }
+        /*
+          新老用户校验 状态编程
+          根据mid字段来进行分类 keyBy
+          valueState中保存每次数据过来的 is_New 字段
+          保存每个 mid 的首次访问日期，每条进入该算子的访问记录，
+          都会把每条mid对应的首次访问时间读取出来
+          只要首次访问时间不为空，则认为该访问时老访客，否则是新访客
+          如果是新访客切没有访问记录的话， 会写入首次访问时间
+          ods_base_log
+          {
+              "common":{
+                  "ar":"440000",
+                  "ba":"vivo",
+                  "ch":"oppo",
+                  "is_new":"1",
+                  "md":"vivo iqoo3",
+                  "mid":"mid_14",
+                  "os":"Android 11.0",
+                  "uid":"1",
+                  "vc":"v2.1.134"
+              },
+              "start":{
+                  "entry":"icon",
+                  "loading_time":11704,
+                  "open_ad_id":14,
+                  "open_ad_ms":1010,
+                  "open_ad_skip_ms":1001
+              },
+              "ts":1660483545000
+          }
          */
         // TODO: 2023/7/1 这里留下一个问题，这里的状态保存多久？要不要设置过期时间？
         SingleOutputStreamOperator<JSONObject> jsonObjWithNewFlagDS = jsonDS
@@ -152,6 +152,10 @@ public class BaseLogApp {
         pageDS.print(">>>>>>>>>>>>>>>>page");
         startDS.print(">>>>>>>>>>>>>>>start");
         displayDS.print(">>>>>>>>>>>>>display");
+
+        startDS.addSink(MyKafkaUtil.getKafkaProducer(getKafkaProp("dwd_log.start_sink")));
+        pageDS.addSink(MyKafkaUtil.getKafkaProducer(getKafkaProp("dwd_log.page_sink")));
+        displayDS.addSink(MyKafkaUtil.getKafkaProducer(getKafkaProp("dwd_log.display_sink")));
 
         env.execute("DwdBaseLog");
     }

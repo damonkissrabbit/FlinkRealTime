@@ -24,6 +24,17 @@ import java.util.List;
  * processBroadcastElement 方法的执行先于 processElement 方法，在处理主输入流的元素之前
  * 需要先处理广播流的元素，以确保输入流可以使用最新的广播状态数据进行处理
  */
+
+/**
+ * 怎么确定一条数据应该进入kafka还是hbase的？
+ * 广播流监控的是table_process这张表，这张表里面的source_table字段对应这数据库里面所有表的信息（处理table_process）这张表
+ * 广播流以 table_process 里面的 source_table + "_" + operate_type 作为 key，tableProcess (也就是table_process)中的一行数据
+ * 作为value，来进行广播。这些操作都是在 processBroadcastElement 这个方法里面完成
+ * 后面在processElement里面通过对应的key来取出相关的广播流数据，能取到是因为进入processElement里面的value是进过Flink cdc那边处理过的
+ * 在进过flink cdc处理完之后的json中，有tableName和type字段分别对应了变更数据的表名和操作类型（insert update delete）
+ * 如果操作类型是delete的话 hbase默认不做处理（就是多了一条维度信息，其余的不会有影响）
+ *
+ */
 public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, String, JSONObject> {
 
     private final OutputTag<JSONObject> objectOutputTag;
@@ -34,7 +45,6 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
         this.objectOutputTag = objectOutputTag;
         this.mapStateDescriptor = mapStateDescriptor;
     }
-
 
 
     @Override
@@ -99,6 +109,7 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
     /**
      * processBroadcastElement 方法会在广播流的每个元素上被调用，它用于处理广播流中的每个广播事件
      * 并更新状态或发送广播数据给下游处理函数，这个方法的执行时并行的，即每个并行任务都会处理自己接受到的广播元素
+     *
      * @param value
      * @param ctx
      * @param out
