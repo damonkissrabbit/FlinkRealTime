@@ -131,3 +131,13 @@ services:
 #      - "./clickhouse/log/clickhouse-server.err.log:/var/log/clickhouse-server/clickhouse-server.err.log"
     networks:
       - apache-networks
+
+
+# 用于创建一个使用 tmpfs 文件系统的本地卷，用于在容器中存储临时数据，例如临时文件、缓存等。
+# 由于 tmpfs 是基于内存的文件系统，适合存储临时数据，读写舒服较快，切数据在容器停止后会被清除，不会留下永久的存储。
+volumes:
+  shared_tempfs:
+    driver: local
+    driver_opts:
+      type: "tmpfs"
+      device: "tmpfs"
