@@ -7,10 +7,7 @@ import org.apache.flink.streaming.connectors.kafka.KafkaSerializationSchema;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
-import java.io.IOException;
 import java.util.Properties;
-
-import static com.damon.utils.PropUtil.getKafkaProp;
 
 public class MyKafkaUtil {
     private static final String brokers = "localhost:9092";
@@ -51,5 +48,14 @@ public class MyKafkaUtil {
                 new SimpleStringSchema(),
                 properties
         );
+    }
+
+    public static String getKafkaDDL(String topic, String groupId) {
+        return " 'connector' = 'kafka', " +
+                " 'topic' = '" + topic + "'," +
+                " 'properties.bootstrap.servers' = '" + brokers + "', " +
+                " 'properties.group.id' = '" + groupId + "', " +
+                " 'format' = 'json', " +
+                " 'scan.startup.mode' = 'latest-offset'  ";
     }
 }
